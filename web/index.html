@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Interview-prep roadmaps for Go, Kubernetes, Cloud, Security, Networking, System Design, Computer Architecture and Storage.">
+<title>Cloud-Native Engineering Roadmap</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9A%80%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/widgets.css">
+</head>
+<body>
+<a href="#content" class="skip-link">Skip to content</a>
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar" aria-label="Navigation">
+    <div class="sidebar-hdr">
+      <a href="#/" class="brand"><span class="brand-logo" aria-hidden="true">🚀</span><span><strong>Cloud-Native Roadmap</strong><small>Go · K8s · Cloud · Security · Design <span id="appVersion" class="app-ver"></span></small></span></a>
+    </div>
+    <div class="sidebar-prog">
+      <div class="prog-txt"><span>Overall progress</span><span class="prog-pct" id="overallPct">0%</span></div>
+      <div class="bar"><div class="bar-fill" id="overallFill"></div></div>
+      <div class="sidebar-meta"><span id="streakBadge">🔥 0 day streak</span><span id="syncBadge" class="sync-badge" title="Where your progress is stored">Local</span></div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-ft">
+      <button type="button" class="btn-ghost" data-action="export" title="Download your progress as JSON">⬇ Export</button>
+      <button type="button" class="btn-ghost" data-action="import" title="Restore progress from a JSON export">⬆ Import</button>
+      <button type="button" class="btn-ghost danger" data-action="reset" title="Clear all checkmarks">Reset</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </aside>
+  <div class="scrim" data-action="close-sidebar"></div>
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="icon-btn menu-btn" data-action="toggle-sidebar" aria-label="Toggle navigation">☰</button>
+      <nav class="breadcrumb" id="breadcrumb" aria-label="Breadcrumb"></nav>
+      <div class="topbar-tabs" id="topbarTabs" role="tablist"></div>
+      <button type="button" class="search-trigger" data-action="open-search"><span aria-hidden="true">🔍</span><span class="search-label">Search</span><kbd>Ctrl K</kbd></button>
+      <button type="button" class="icon-btn" data-action="toggle-theme" aria-label="Toggle light/dark theme" title="Toggle theme">◐</button>
+    </header>
+    <div class="update-bar" id="updateBar" role="status" hidden><span id="updateMsg"></span><button type="button" class="btn primary" data-action="reload">Reload</button><button type="button" class="icon-btn" data-action="dismiss-update" aria-label="Dismiss">✕</button></div>
+    <main class="content" id="content" tabindex="-1"></main>
+  </div>
+</div>
+
+<div class="overlay" id="searchOverlay" data-action="close-search-backdrop" hidden>
+  <div class="search-modal" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-input-wrap">
+      <span aria-hidden="true">🔍</span>
+      <input class="search-input" id="searchInput" type="search" placeholder="Search topics, problems, Q&amp;A, flashcards across all roadmaps…" autocomplete="off" spellcheck="false">
+      <kbd data-action="close-search">Esc</kbd>
+    </div>
+    <div class="search-results" id="searchResults" role="listbox"></div>
+    <div class="search-footer"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript><p class="noscript">This application requires JavaScript.</p></noscript>
+
+<script src="js/version.js"></script>
+<script src="js/registry.js"></script>
+<script src="js/data/go.js"></script>
+<script src="js/data/kubernetes.js"></script>
+<script src="js/data/cloud.js"></script>
+<script src="js/data/security.js"></script>
+<script src="js/data/networking.js"></script>
+<script src="js/data/system-design.js"></script>
+<script src="js/data/computer-architecture.js"></script>
+<script src="js/data/storage.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/visuals/go.js"></script>
+<script src="js/visuals/kubernetes.js"></script>
+<script src="js/visuals/cloud.js"></script>
+<script src="js/visuals/security.js"></script>
+<script src="js/visuals/networking.js"></script>
+<script src="js/visuals/system-design.js"></script>
+<script src="js/visuals/computer-architecture.js"></script>
+<script src="js/visuals/storage.js"></script>
+<script src="js/visuals/labs.js"></script>
+<script src="js/diagrams.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

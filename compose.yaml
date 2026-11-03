@@ -1,0 +1,26 @@
+# docker compose up -d --build   (or: make up)  ->  http://localhost:8080
+services:
+  roadmap:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+    image: cloud-native-roadmap:${VERSION:-dev}
+    ports:
+      - "8080:8080"
+    volumes:
+      - roadmap-data:/data
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    restart: unless-stopped
+    healthcheck:
+      # distroless has no shell or curl; the server binary probes itself.
+      test: ["CMD", "/roadmap-server", "-healthcheck"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  roadmap-data:

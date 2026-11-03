@@ -1,0 +1,6 @@
+bin/
+dist/
+deploy/
+*.db
+*.md
+.git

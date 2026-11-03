@@ -1,0 +1,94 @@
+# Example Kubernetes deployment (doubles as a worked example for the Kubernetes roadmap).
+#   kubectl apply -f deploy/kubernetes.yaml
+#   kubectl -n roadmap port-forward svc/roadmap 8080:80
+#
+# Design notes:
+# - SQLite on a ReadWriteOnce volume means exactly one writer, so replicas: 1 and
+#   strategy: Recreate (a RollingUpdate would start a second pod on the same volume).
+#   Scaling out horizontally would require moving state to a shared database.
+# - The server is stateless apart from that volume, handles SIGTERM gracefully and
+#   exposes /healthz (liveness) and /readyz (readiness: database ping).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: roadmap
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: roadmap-data
+  namespace: roadmap
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roadmap
+  namespace: roadmap
+  labels: { app.kubernetes.io/name: roadmap }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app.kubernetes.io/name: roadmap }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: roadmap }
+    spec:
+      terminationGracePeriodSeconds: 30
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: server
+          image: cloud-native-roadmap:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8080 }
+          env:
+            - { name: ADDR, value: ":8080" }
+            - { name: DATA_DIR, value: /data }
+            - { name: LOG_FORMAT, value: json }
+            - { name: SHUTDOWN_TIMEOUT, value: 20s }
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 2
+            failureThreshold: 15
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: roadmap-data }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: roadmap
+  namespace: roadmap
+spec:
+  selector: { app.kubernetes.io/name: roadmap }
+  ports:
+    - { name: http, port: 80, targetPort: http }
