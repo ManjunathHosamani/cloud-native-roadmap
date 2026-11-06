@@ -13,6 +13,7 @@ Add notes under **Unreleased** as you work. `make bump` moves them into a dated 
 
 - Fixed `make install` on Linux and macOS when no copy of the app was running. The empty PID field was lost when the target list was read, so every later field shifted: the binary was copied to a file named `127.0.0.1:3000` in the project folder, the data folder was empty, and the install failed its health check.
 - Fixed `basename: invalid option` warnings from `make start`, `stop`, `status` and `upgrade` when a login shell (shown by `ps` as `-bash`) was running.
+- Added an Ubuntu server setup in `deploy/ubuntu/`: an install guide, a systemd unit so the app starts on boot, an nginx config that serves it over HTTPS without a login, and `upgrade.sh`, which pulls the latest commit from GitHub, upgrades in place and rolls back if the new version is not healthy.
 
 ## [1.3.0] - 2026-11-03
 

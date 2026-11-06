@@ -1,0 +1,17 @@
+# systemd unit: runs the installed app on boot and restarts it if it crashes.
+# Install: cp deploy/ubuntu/roadmap.service /etc/systemd/system/ && systemctl enable --now roadmap
+#
+# The app listens on loopback only; nginx (nginx-roadmap.conf) serves it over HTTPS.
+# -data-dir is required: systemd sets no $HOME here, so the default would be ./data.
+[Unit]
+Description=Cloud-Native Roadmap
+After=network.target
+
+[Service]
+ExecStart=/root/.local/share/cloud-native-roadmap/roadmap-server -addr 127.0.0.1:3000 -data-dir /root/.config/go-roadmap -log-file /root/.config/go-roadmap/logs/server.log
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

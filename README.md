@@ -44,6 +44,8 @@ Each binary embeds the web app and runs on its own. Progress is stored in SQLite
 
 The commands are the same on every OS. In Windows PowerShell type `.\make <task>`; on Linux/macOS type `make <task>`. Run them from the `cloud-native-roadmap` folder.
 
+This section is for a personal machine. To host the app on an Ubuntu server for everyone on the network (HTTPS, starts on boot, upgrades from GitHub), follow [deploy/ubuntu/README.md](deploy/ubuntu/README.md) instead.
+
 ### Install (first time)
 ```bash
 make install     # vet + test + validate, build, install, add a Start menu / desktop entry
