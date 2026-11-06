@@ -10,6 +10,9 @@ INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/share/cloud-native-roadmap}"
 INSTALLED="$INSTALL_DIR/roadmap-server"
 BIN_LINK="$HOME/.local/bin/roadmap-server"
 STAGED="bin/staging/roadmap-server"
+# Field separator for upgrade targets. It must not be whitespace: `read` merges runs of
+# tabs, so an empty PID field (fresh install) would vanish and shift every later field.
+US=$'\x1f'
 case "$(uname -s)" in
   Darwin) DEFAULT_DATA="$HOME/Library/Application Support/go-roadmap" ;;
   *)      DEFAULT_DATA="${XDG_CONFIG_HOME:-$HOME/.config}/go-roadmap" ;;
@@ -32,7 +35,7 @@ exe_of() {
 find_running() {
   ps -eo pid=,args= | while read -r pid cmd; do
     first="${cmd%% *}"
-    base="$(basename "$first")"
+    base="${first##*/}"   # not basename: login shells show in ps as "-bash", which basename reads as an option
     [[ "$base" =~ $NAMES ]] || continue
     args=""; [[ "$cmd" == *" "* ]] && args="${cmd#* }"
     addr="$(arg_value "$args" addr)"; addr="${addr:-127.0.0.1:3000}"
@@ -112,18 +115,18 @@ cmd_upgrade() {
     if [ "$legacy" = 1 ]; then from="legacy app"; else from="$(running_version "$addr")"; from="${from:+v$from}"; from="${from:-pre-1.2.0}"; fi
     say "found running $exe (PID $pid, $addr, data $data, $from)"
     [ "$legacy" = 1 ] && { exe="$INSTALLED"; args=""; }
-    targets+=("$pid"$'\t'"$exe"$'\t'"$addr"$'\t'"$data"$'\t'"$args")
+    targets+=("$pid$US$exe$US$addr$US$data$US$args")
   done
   if [ ${#targets[@]} -eq 0 ]; then
     say "no running instance found; installing to $INSTALLED"
-    targets+=(""$'\t'"$INSTALLED"$'\t'"127.0.0.1:3000"$'\t'"$DEFAULT_DATA"$'\t')
+    targets+=("$US$INSTALLED${US}127.0.0.1:3000$US$DEFAULT_DATA$US")
   fi
 
   local t backups=()
-  for t in "${targets[@]}"; do IFS=$'\t' read -r pid exe addr data args <<<"$t"; if [ -n "$pid" ]; then stop_pid "$pid"; fi; done
-  for t in "${targets[@]}"; do IFS=$'\t' read -r pid exe addr data args <<<"$t"; backups+=("$(backup_data "$data" "before-$VERSION")"); done
+  for t in "${targets[@]}"; do IFS=$US read -r pid exe addr data args <<<"$t"; if [ -n "$pid" ]; then stop_pid "$pid"; fi; done
+  for t in "${targets[@]}"; do IFS=$US read -r pid exe addr data args <<<"$t"; backups+=("$(backup_data "$data" "before-$VERSION")"); done
   for t in "${targets[@]}"; do
-    IFS=$'\t' read -r pid exe addr data args <<<"$t"
+    IFS=$US read -r pid exe addr data args <<<"$t"
     mkdir -p "$(dirname "$exe")"
     if [ -f "$exe" ]; then cp -f "$exe" "$exe.prev"; fi
     cp -f "$STAGED" "$exe.new" && mv -f "$exe.new" "$exe"   # atomic replace
@@ -133,7 +136,7 @@ cmd_upgrade() {
 
   local i=0 failed=()
   for t in "${targets[@]}"; do
-    IFS=$'\t' read -r pid exe addr data args <<<"$t"
+    IFS=$US read -r pid exe addr data args <<<"$t"
     if [ -n "$pid" ]; then
       start_app "$exe" "$args" "$data"
       if wait_healthy "$addr" "$VERSION"; then

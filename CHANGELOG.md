@@ -11,6 +11,9 @@ Add notes under **Unreleased** as you work. `make bump` moves them into a dated 
 
 ## [Unreleased]
 
+- Fixed `make install` on Linux and macOS when no copy of the app was running. The empty PID field was lost when the target list was read, so every later field shifted: the binary was copied to a file named `127.0.0.1:3000` in the project folder, the data folder was empty, and the install failed its health check.
+- Fixed `basename: invalid option` warnings from `make start`, `stop`, `status` and `upgrade` when a login shell (shown by `ps` as `-bash`) was running.
+
 ## [1.3.0] - 2026-11-03
 
 Content review of all eight roadmaps. Corrections, 2025–26 updates, new lessons and problems, and about 75 new animated diagrams. Existing progress is kept: content was only appended, and no titles or questions were renamed.
